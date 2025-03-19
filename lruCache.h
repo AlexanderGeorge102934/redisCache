@@ -8,21 +8,21 @@
 #include <utility>
 
 
-template <typename T>
+template <typename Key, typename Value>
 class lruCache{
 
 	private:
-		std::unordered_map<T,std::pair<T, std::list<T>::iterator>> cacheMap;
-		std::list<T> cache;
+		typedef std::unordered_map<Key, std::pair<Value, typename std::list<Key>::iterator>>cacheMap;
+		std::list<Key> cache;
 		int size;
 	public:
 		lruCache();
 
-		void put(const T &key, const T &value);
+		void put(const Key &key, const Value &value);
 
-		T get(const T& value);
+		Value get(const Key& value);
 
-}
+};
 
 
 #endif
