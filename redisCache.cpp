@@ -2,7 +2,10 @@
 	
 // Constructor definition
 template <typename Key, typename Value>
-redisCache<Key, Value>::redisCache(const unsigned int& capacity) : size(capacity) {}
+redisCache<Key, Value>::redisCache(const unsigned int& capacity) : size(capacity) {
+	// Start the background thread for expiration
+        std::thread([this]() { expirationThread(); }).detach();
+}
 
 template <typename Key, typename Value>
 void redisCache<Key,Value>::put(const Key &key, const Value &value){
@@ -59,7 +62,39 @@ void redisCache<Key,Value>::expire(time_t secondsToExpire, const Key &key){
 
 }
 
+template <typename Key, typename Value>
+void redisCache<Key,Value>:: removeExpiredKeys(){
+	std::lock_guard<std::mutex> lock(mx); // Lock the mutex
+        time_t now = time(nullptr);
+	
+	while(!expirationHeap.empty() && expirationHeap.top().first <= now){
+		Key key = expirationHeap.top().second;
+		
+		if(cacheMap.count(key) > 0){ // If key exists in map
+			auto it = cacheMap[key].second;
+			cache.erase(it); // Remove from double linked list 
+			cacheMap.erase(key); // Remove from hashmap 
+			expirationHeap.pop(); // Remove from expiration queue
+		}	
 
+	}
+}
+
+
+template <typename Key, typename Value>
+void redisCache<Key,Value>:: expirationThread(){
+	while (running) {
+            std::this_thread::sleep_for(std::chrono::seconds(1)); // Check every 1 second
+            removeExpiredKeys();
+        }
+
+}
+
+
+template <typename Key, typename Value>
+redisCache<Key,Value>:: ~redisCache(){
+	running = false; // Stop the background thread
+}
 
 
 
