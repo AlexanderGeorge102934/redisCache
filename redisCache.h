@@ -37,7 +37,7 @@ class redisCache{
 		~redisCache();
 		void put(const Key &key, const Value &value);
 
-		void expire(time_t secondsToExpire, const Key &key);
+		void expire(time_t& secondsToExpire, const Key &key);
 
 		typename std::optional<Value> get(const Key& key);
 

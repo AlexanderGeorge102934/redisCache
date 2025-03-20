@@ -48,7 +48,7 @@ std::optional<Value> redisCache<Key, Value>::get(const Key& key) {
 
 
 template <typename Key, typename Value>
-void redisCache<Key,Value>::expire(time_t secondsToExpire, const Key &key){
+void redisCache<Key,Value>::expire(time_t &secondsToExpire, const Key &key){
 
 	// Check to make sure the key exists
 	if(cacheMap.count(key) == 0){
