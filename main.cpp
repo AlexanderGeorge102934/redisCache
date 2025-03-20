@@ -2,6 +2,26 @@
 #include <iostream>
 
 int main() {
+    
+
+    bool exit = false;
+
+    std::cout << "Welcome to Redis Cache!" << std::endl;
+    std::cout<< "Commands:" << std::endl; 
+    std::cout << "SET key value" << std::endl;
+    std::cout << "GET key" << std::endl;
+    std::cout << "DEL key" << std::endl;
+    std::cout << "EXPIRE key seconds" << std::endl;
+    
+
+
+    while(exit == false){
+	
+
+
+
+    }
+	
     // Create an LRU cache with a capacity of 2
     lruCache<int, std::string> cache(2);
 

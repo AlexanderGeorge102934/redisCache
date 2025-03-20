@@ -1,13 +1,11 @@
-#include "lruCache.h"
-#include 
-
+#include "redisCache.h"
 	
 // Constructor definition
 template <typename Key, typename Value>
-lruCache<Key, Value>::lruCache(const unsigned int& capacity) : size(capacity) {}
+redisCache<Key, Value>::redisCache(const unsigned int& capacity) : size(capacity) {}
 
 template <typename Key, typename Value>
-void lruCache<Key,Value>::put(const Key &key, const Value &value){
+void redisCache<Key,Value>::put(const Key &key, const Value &value){
 	if(cacheMap.count(key) == 0){
 		// Add to front of list 
 		cache.push_front(key);
@@ -16,7 +14,7 @@ void lruCache<Key,Value>::put(const Key &key, const Value &value){
 		// Remove LRU from back of list 	
 		if(cache.size() > size){
 			Key lastElement = cache.back();
-			cacheMap.erase(key);
+			cacheMap.erase(lastElement);
 			cache.pop_back();
 		}	
 
@@ -32,7 +30,7 @@ void lruCache<Key,Value>::put(const Key &key, const Value &value){
 
 // Method to retrieve a value by key
 template <typename Key, typename Value>
-std::optional<Value> lruCache<Key, Value>::get(const Key& key) {
+std::optional<Value> redisCache<Key, Value>::get(const Key& key) {
     // Check if the key exists in the cache
     if (cacheMap.count(key) == 0) {
         return std::nullopt; // Key not found
@@ -44,3 +42,25 @@ std::optional<Value> lruCache<Key, Value>::get(const Key& key) {
     // Return the value associated with the key
     return cacheMap[key].first;
 }
+
+
+template <typename Key, typename Value>
+void redisCache<Key,Value>::expire(time_t secondsToExpire, const Key &key){
+
+	// Check to make sure the key exists
+	if(cacheMap.count(key) == 0){
+		std::cout << "Key: "<< key << "doesn't exist." << std::endl;
+		return;
+	}
+
+	// Add key to the heap 
+	expirationHeap.push({secondsToExpire, key});
+
+
+}
+
+
+
+
+
+template class redisCache<int, std::string>;

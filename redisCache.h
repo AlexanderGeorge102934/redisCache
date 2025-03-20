@@ -1,5 +1,5 @@
-#ifndef LRUCACHE_H
-#define LRUCACHE_H
+#ifndef REDISCACHE_H
+#define REDISCACHE_H
 
 #include <iostream>
 #include <list>
@@ -7,19 +7,27 @@
 #include <unordered_map>
 #include <utility>
 #include <optional>
+#include <queue>
+#include <time.h>
 
 
 template <typename Key, typename Value>
-class lruCache{
+class redisCache{
 
 	private:
+		// Store values in cache and keep track 
 		std::unordered_map<Key, std::pair<Value, typename std::list<Key>::iterator>>cacheMap;
 		std::list<Key> cache;
 		unsigned int size;
+
+		// Store expiration of keys with minHeap sorted by time to expire 
+		std::priority_queue<std::pair<time_t, Key>> expirationHeap; 
 	public:
-		lruCache(const unsigned int &capacity);
+		redisCache(const unsigned int &capacity);
 
 		void put(const Key &key, const Value &value);
+
+		void expire(time_t secondsToExpire, const Key &key);
 
 		typename std::optional<Value> get(const Key& key);
 
